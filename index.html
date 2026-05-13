@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>PyCon Hack Night — Streamlit Talk</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/night.css" id="theme">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <style>
+    .reveal, .reveal h1, .reveal h2, .reveal h3, .reveal h4, .reveal p, .reveal li { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    .reveal h1, .reveal h2, .reveal h3 { text-transform: none; letter-spacing: -0.5px; }
+    .reveal section { padding: 40px; box-sizing: border-box; }
+    .accent { color: #29B5E8; }
+    .accent2 { color: #FF4B4B; }
+    .muted { color: #888; font-size: 0.8em; }
+
+    .reveal section.cover-slide { display: flex !important; flex-direction: column; justify-content: center; align-items: flex-start; text-align: left; height: 100%; padding-left: 6%; color: #0a0a0a; }
+    .reveal .cover-logo { height: 120px; width: auto; margin: 0 0 0.8em -50px; background: transparent; box-shadow: none; border: none; }
+    .reveal .cover-title { color: #0a0a0a; font-size: 1.54em; line-height: 1.15; margin: 0 0 0.8em 0; max-width: 80%; font-weight: 800; }
+    .reveal .cover-name { color: #0a0a0a; font-weight: bold; font-size: 0.8em; margin: 0.4em 0 0 0; }
+    .reveal .cover-role { color: #0a0a0a; margin: 0.1em 0 0 0; opacity: 0.8; font-size: 0.55em; font-style: italic; }
+
+    .chooser { display: flex !important; flex-direction: column; justify-content: center; align-items: center; height: 100%; gap: 1.2em; }
+    .chooser h2 { font-size: 1.4em; font-weight: 700; color: #fff; margin: 0; border: none; text-align: center; }
+    .chooser .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 2em; width: 100%; max-width: 1100px; }
+    .chooser .card { display: flex; flex-direction: column; align-items: center; padding: 1.4em 1.2em; border-radius: 14px; background: #111; text-decoration: none !important; transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease; border: 2px solid #222; cursor: pointer; }
+    .chooser .card:hover { transform: translateY(-6px); box-shadow: 0 14px 40px rgba(0,0,0,0.55); }
+    .chooser .card.blue { border-color: #29B5E8; }
+    .chooser .card.blue:hover { box-shadow: 0 14px 40px rgba(41,181,232,0.35); }
+    .chooser .card.red { border-color: #FF4B4B; }
+    .chooser .card.red:hover { box-shadow: 0 14px 40px rgba(255,75,75,0.35); }
+    .chooser .preview { width: 100%; aspect-ratio: 16 / 9; border-radius: 8px; margin-bottom: 0.9em; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 1em; box-sizing: border-box; }
+    .chooser .preview.blue { background: linear-gradient(135deg, #0a0a0a, #1a2a3a); border: 1px solid #29B5E8; }
+    .chooser .preview.red { background: linear-gradient(135deg, #0a0a0a, #3a1a1a); border: 1px solid #FF4B4B; }
+    .chooser .preview .pv-title { font-size: 0.9em; font-weight: 800; color: #fff; margin: 0; }
+    .chooser .preview .pv-sub { font-size: 0.5em; color: #ccc; margin-top: 0.4em; font-weight: 500; }
+    .chooser .card-label { font-size: 0.55em; font-weight: 700; color: #fff; text-align: center; }
+    .chooser .card-label .arrow { display: inline-block; margin-left: 0.4em; transition: transform 0.18s ease; }
+    .chooser .card:hover .arrow { transform: translateX(4px); }
+    .chooser .footer { color: #666; font-size: 0.45em; margin-top: 0.8em; }
+    .reveal section.hacknight { display: flex !important; flex-direction: column; justify-content: flex-start; align-items: center; gap: 1em; height: 100%; padding: 1.3em 4% 0 4%; text-align: left; }
+    .hacknight > h2 { color: #fff; font-size: 1.4em; font-weight: 700; margin: 0; border: none; text-align: center; }
+    .hacknight .hn-body { display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 3em; }
+    .hacknight .hn-left { flex: 1 1 0; min-width: 0; }
+    .hacknight .hn-left h2 { display: none; }
+    .hacknight .hn-left p { color: #ddd; font-size: 0.52em; line-height: 1.5; margin: 0 0 0.55em 0; }
+    .hacknight .hn-left ul.hn-meta { list-style: none !important; padding: 0 !important; margin: 0 0 0.9em 0 !important; }
+    .hacknight .hn-left ul.hn-meta li { display: flex !important; align-items: center; gap: 0.7em; color: #fff; font-size: 0.52em; line-height: 1.4; margin: 0.3em 0; list-style: none !important; }
+    .hacknight .hn-left ul.hn-meta li::before { content: none !important; }
+    .hacknight .hn-left ul.hn-meta .material-icons { font-size: 1.4em; color: #29B5E8; flex: 0 0 auto; }
+    .hacknight .hn-right { flex: 0 0 auto; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 0.6em; }
+    .hacknight .hn-right img { width: 320px; height: auto; background: #fff; padding: 12px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+    .hacknight .hn-right .hn-link { color: #29B5E8; font-size: 0.42em; text-decoration: none; font-weight: 600; }
+    .hacknight .hn-right .hn-link:hover { text-decoration: underline; }
+    .hacknight .hn-left strong { color: #29B5E8; }
+    .hacknight .hn-left code { background: #1a1a1a; color: #FF4B4B; padding: 0.1em 0.35em; border-radius: 4px; font-size: 0.95em; }
+    .hacknight .hn-cta { color: #FF4B4B !important; font-weight: 800; font-size: 0.5em !important; letter-spacing: 0.04em; margin-top: 0.8em !important; }
+  </style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+<section class="cover-slide" data-background-gradient="linear-gradient(120deg, #d9f2ff 0%, #b8d8f5 55%, #d0c4ec 100%)">
+  <img src="assets/streamlit-logo-primary-colormark-darktext.png" alt="Streamlit" class="cover-logo">
+  <h1 class="cover-title">The Ultimate Guide to Vibe Engineering with Streamlit</h1>
+  <p class="cover-name">Chanin Nantasenamat, PhD</p>
+  <p class="cover-role">Lead Developer Advocate</p>
+  <p class="cover-role">Streamlit Open Source, Snowflake Inc.</p>
+</section>
+
+<section style="text-align: left; padding: 40px; box-sizing: border-box;">
+  <h2 style="font-size: 1.4em; font-weight: 700; color: #fff; margin: 0 0 0.8em 0; border-bottom: 2px solid #29B5E8; padding-bottom: 0.2em;">What We're Building With</h2>
+  <ul style="display: block; margin: 0.3em 0 0.6em 0; padding-left: 0; list-style: none;">
+    <li style="margin: 0.5em 0; font-size: 0.75em; line-height: 1.4; padding-left: 1.6em; position: relative;"><span style="color: #29B5E8; font-weight: bold; position: absolute; left: 0; top: 0;">→</span><span style="color: #29B5E8; font-weight: 600;">Cortex Code CLI</span> — an AI coding assistant that runs in your terminal</li>
+    <li style="margin: 0.5em 0; font-size: 0.75em; line-height: 1.4; padding-left: 1.6em; position: relative;"><span style="color: #FF4B4B; font-weight: bold; position: absolute; left: 0; top: 0;">→</span><span style="color: #FF4B4B; font-weight: 600;">Streamlit Agent Skills</span> — instruction sets that teach the AI how to write idiomatic Streamlit code</li>
+  </ul>
+  <ul style="display: block; margin: 1.2em 0 0.6em 0; padding-left: 0; list-style: none;">
+    <li style="margin: 0.5em 0; font-size: 0.72em; line-height: 1.6; padding-left: 1.6em; position: relative; color: #ddd;"><span style="color: #fff; position: absolute; left: 0; top: 0; font-size: 1.4em; line-height: 1;">▪</span>Together they let you go from a plain natural language spec (<strong>STREAMLIT.md</strong>) to a working Streamlit app without leaving the command line.</li>
+    <li style="margin: 0.5em 0; font-size: 0.72em; line-height: 1.6; padding-left: 1.6em; position: relative; color: #ddd;"><span style="color: #fff; position: absolute; left: 0; top: 0; font-size: 1.4em; line-height: 1;">▪</span>You describe your intent in the spec, and the AI coding assistant — powered by Agent Skills — generates idiomatic Streamlit code from it.</li>
+  </ul>
+</section>
+
+<section class="chooser">
+  <h2>Pick a Track</h2>
+  <div class="cards">
+    <a class="card blue" href="slides1.html">
+      <div class="preview blue">
+        <p class="pv-title">STREAMLIT.md</p>
+        <p class="pv-sub">Spec-Driven Development</p>
+      </div>
+      <div class="card-label">Track 1: Spec-driven Development <span class="arrow">→</span></div>
+    </a>
+    <a class="card red" href="slides2.html">
+      <div class="preview red">
+        <p class="pv-title">Streamlit Agent Skills</p>
+        <p class="pv-sub">Build Apps Agentically</p>
+      </div>
+      <div class="card-label">Track 2: Agent Skills <span class="arrow">→</span></div>
+    </a>
+  </div>
+  <p class="footer">Click a card to open the deck</p>
+</section>
+
+<section class="hacknight">
+  <h2>Streamlit AI Hack Night</h2>
+  <div class="hn-body">
+    <div class="hn-left">
+    <ul class="hn-meta">
+      <li><span class="material-icons">event</span>Fri, May 15</li>
+      <li><span class="material-icons">schedule</span>5:30 PM &ndash; 8:30 PM</li>
+      <li><span class="material-icons">place</span>100 W Broadway, Long Beach, CA</li>
+    </ul>
+    <p>Join the <strong>Streamlit and Snowflake</strong> team for a fun, hands-on hack night where you can build something cool with AI, meet other builders, and show off what you create.</p>
+    <p>Bring your best idea, or just bring your curiosity and jump into the challenge! There will be prizes for the top apps, swag for all, food &amp; drinks.</p>
+    <p>Don't miss this chance to build, connect, and have a great time.</p>
+    <p class="hn-cta">Scan to RSVP &rarr;</p>
+  </div>
+  <div class="hn-right">
+    <img src="assets/qr_streamlit_hacknight.png" alt="Streamlit + Snowflake AI Hack Night QR code">
+    <a class="hn-link" href="https://luma.com/qccswvze" target="_blank" rel="noopener">luma.com/qccswvze</a>
+  </div>
+  </div>
+</section>
+
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+<script>
+  Reveal.initialize({
+    hash: true,
+    slideNumber: false,
+    transition: 'slide',
+    center: false,
+    width: 1280,
+    height: 720,
+    margin: 0.06,
+    minScale: 0.2,
+    maxScale: 2.0
+  });
+</script>
+</body>
+</html>

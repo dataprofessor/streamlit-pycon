@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>STREAMLIT.md: Spec-Driven Development</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/night.css" id="theme">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <style>
+    .reveal, .reveal h1, .reveal h2, .reveal h3, .reveal h4, .reveal p, .reveal li, .reveal td, .reveal th { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    .reveal h1, .reveal h2, .reveal h3 { text-transform: none; letter-spacing: -0.5px; font-weight: 800; }
+    .reveal h2 { color: #fff; font-size: 1.26em; font-weight: 800; margin: 0 0 0.5em 0; text-align: left; border-bottom: 2px solid #29B5E8; padding-bottom: 0.2em; }
+    .reveal section { text-align: left; padding: 40px; box-sizing: border-box; }
+    .reveal ul { display: block; margin: 0.3em 0 0.6em 0; padding-left: 0; list-style: none; }
+    .reveal ul li { margin: 0.5em 0; font-size: 0.75em; line-height: 1.4; padding-left: 1.6em; position: relative; }
+    .reveal ul li::before { content: "\2192"; color: #FF4B4B; font-weight: bold; position: absolute; left: 0; top: 0; }
+    .reveal pre { box-shadow: 0 4px 20px rgba(0,0,0,0.4); margin: 0.4em 0; width: 100%; }
+    .reveal pre code { font-size: 0.7em; line-height: 1.35; padding: 0.6em 0.9em; max-height: none; }
+    .reveal code { font-family: "JetBrains Mono", "Fira Code", monospace; }
+    .accent { color: #29B5E8; }
+    .muted { color: #888; font-size: 0.8em; }
+    .reveal table.t { margin: 1.2em 0 0.3em 0; border-collapse: collapse; font-size: 0.55em; width: 100%; }
+    .reveal table.t { border: 1px solid #555; }
+    .reveal table.t th, .reveal table.t td { padding: 0.45em 0.8em; border: 1px solid #555; text-align: left; vertical-align: top; }
+    .reveal table.t thead th { background: #29B5E8; color: #000; font-weight: bold; }
+    .reveal table.t tbody tr:nth-child(even) { background: rgba(255,255,255,0.04); }
+    .reveal table.t code { color: #29B5E8; background: transparent; font-size: 1em; }
+    .code-label { display: inline-block; background: #29B5E8; color: #000; font-size: 0.5em; font-weight: bold; padding: 0.25em 0.7em; border-radius: 4px 4px 0 0; font-family: "JetBrains Mono", monospace; letter-spacing: 0.5px; }
+    .code-label + pre { margin-top: 0; border-top-left-radius: 0; }
+    pre + table.t, pre + .code-label, .reveal pre + p, ul + .code-label, ul + pre, table.t + .code-label, table.t + pre { margin-top: 1.2em; }
+    .reveal section.title-slide { display: flex !important; flex-direction: column; justify-content: center; align-items: center; text-align: center !important; height: 100%; }
+    .back-btn { position: fixed; top: 8px; left: 16px; display: inline-flex; align-items: center; gap: 0.35em; padding: 8px 14px; background: rgba(255,255,255,0.06); border: 1px solid #29B5E8; border-radius: 999px; color: #29B5E8 !important; font-size: 13px; font-weight: 600; text-decoration: none !important; z-index: 1000; transition: background 0.18s ease, transform 0.18s ease; }
+    .back-btn:hover { background: rgba(41,181,232,0.18); transform: translateX(-2px); }
+    .back-btn .material-icons { font-size: 16px; }
+    .title-slide h1 { font-size: 2.4em; }
+    .title-slide h3 { margin-top: 0.3em; }
+    .title-slide h2 { border: none; text-align: center; }
+    .reveal .slide-number { left: 12px; right: auto; bottom: 8px; top: auto; background: rgba(0,0,0,0.5); padding: 4px 10px; border-radius: 4px; font-size: 14px; }
+    .reveal .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1em; align-items: start; }
+    .reveal .two-col pre { margin: 0; }
+    .reveal section.split-cols { display: grid !important; grid-template-columns: 1fr 1fr; gap: 1.5em 2em; align-items: start; }
+    .reveal section.split-cols.wide-table { grid-template-columns: 1fr 2fr; }
+    .reveal section.split-cols > h2, .reveal section.split-cols > h3 { grid-column: 1 / -1; }
+    .reveal section.split-cols > ul { grid-column: 1 / 2; align-self: start; margin-top: 0; }
+    .reveal section.split-cols > .code-label,
+    .reveal section.split-cols > pre,
+    .reveal section.split-cols > .prompt-block { grid-column: 1 / 2; }
+    .reveal section.split-cols > .prompt-block { margin-top: -30px; }
+    .reveal section.split-cols > .prompt-block.right-col { grid-column: 2 / 3; margin-top: -70px; }
+    .reveal section.split-cols > .prompt-block.right-col.v-center { align-self: center; margin-top: -50px; }
+    .reveal section.split-cols > .prompt-block.right-col .two-col { grid-template-columns: 1fr; }
+    .reveal section.split-cols > .prompt-block .code-label { display: inline-block; }
+    .reveal section.split-cols > .prompt-block pre { margin-top: 0; }
+    .reveal section.split-cols > ul + .code-label { margin-top: 0.4em; }
+    .reveal section.split-cols > pre { margin-top: 0; }
+    .reveal section.split-cols > pre code { font-size: 0.55em; }
+    .reveal section.split-cols > p { grid-column: 1 / 2; }
+    .reveal section.split-cols > table.t { grid-column: 2 / 3; grid-row: 2 / span 99; align-self: start; margin-top: 0; }
+    .reveal section.split-cols.v-center > table.t { margin-top: -30px; }
+    .reveal section.split-cols > table.t.tall { grid-row: 1 / span 99; margin-top: 0; align-self: center; }
+    .reveal table.t.small { font-size: 0.5em; }
+    .reveal table.t.small th, .reveal table.t.small td { padding: 0.35em 0.6em; }
+    .reveal .prompt-block.small pre code { font-size: 0.34em; }
+    .reveal section.split-cols.v-center { align-items: center; }
+    .reveal section.split-cols.v-center > h2, .reveal section.split-cols.v-center > h3 { align-self: start; }
+    .reveal section.split-cols { overflow: visible; }
+    .reveal .slides section { overflow: visible; }
+    .reveal section.split-cols > img.split-img { grid-column: 2 / 3; align-self: start; max-width: 88%; max-height: 70vh; background: #fff; border-radius: 6px; padding: 0.5em; }
+    .reveal section.split-cols > ul > li:first-child { margin-top: 0; }
+    .reveal section.cartoon-slide { height: 100%; display: flex !important; align-items: center; justify-content: center; }
+    .reveal section.cartoon-slide img { max-width: 100%; max-height: 85vh; display: block; margin: 0 auto; background: #fff; border-radius: 6px; }
+    .reveal section.cover-slide { display: flex !important; flex-direction: column; justify-content: center; align-items: flex-start; text-align: left; height: 100%; padding-left: 6%; color: #0a0a0a; }
+    .reveal .cover-logo { height: 120px; width: auto; margin: 0 0 0.8em -50px; background: transparent; box-shadow: none; border: none; }
+    .reveal .cover-title { color: #0a0a0a; font-size: 1.54em; line-height: 1.15; margin: 0 0 0.8em 0; max-width: 80%; font-weight: 800; }
+    .reveal .cover-name { color: #0a0a0a; font-weight: bold; font-size: 0.8em; margin: 0.4em 0 0 0; }
+    .reveal .cover-role { color: #0a0a0a; margin: 0.1em 0 0 0; opacity: 0.8; font-size: 0.55em; font-style: italic; }
+  </style>
+</head>
+<body>
+<div class="reveal">
+<a class="back-btn" href="https://dataprofessor.github.io/streamlit-pycon/index.html#/1"><span class="material-icons">arrow_back</span>Pick a Track</a>
+<div class="slides">
+
+<section class="title-slide" data-background-gradient="linear-gradient(135deg, #0a0a0a, #1a2a3a)">
+  <img src="https://streamlit.io/images/brand/streamlit-logo-primary-colormark-lighttext.png" alt="Streamlit" style="height: 100px; width: auto; margin: 0 auto 0.6em; background: transparent; box-shadow: none; border: none; display: block;">
+  <h3 class="accent" style="margin: 0 0 -0.1em 0; font-size: 1.7em;">Spec-Driven Development with</h3>
+  <h1 style="margin-top: 0;">STREAMLIT.md</h1>
+  <p class="muted">Using Markdown specs to generate better Streamlit apps with LLMs</p>
+</section>
+
+<section class="cartoon-slide">
+  <img src="assets/vibe-coding-vs-spec-driven-development.png"
+       alt="XKCD-style cartoon: vibe coding versus spec-driven development">
+</section>
+
+<section class="split-cols">
+  <h2>What is Vibe Coding?</h2>
+  <ul>
+    <li>You describe an app in chat, the LLM produces code, you ship the diff</li>
+    <li>Fast for prototypes, painful past day one</li>
+    <li>Knowledge lives in the chat history, not the repo</li>
+  </ul>
+  <table class="t">
+    <thead><tr><th>Strength</th><th>Weakness</th></tr></thead>
+    <tbody>
+      <tr><td>Zero setup, instant gratification</td><td>Each new chat starts from zero, prior decisions are forgotten</td></tr>
+      <tr><td>Great for one-off scripts</td><td>Successive edits drift from intent and contradict prior decisions</td></tr>
+      <tr><td>Low barrier to entry</td><td>Context is stored in the chat and doesn't transfer to teammates or new agents</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="split-cols">
+  <h2>Why Vibes Aren't Enough</h2>
+  <ul>
+    <li>Several back and forth iterations to get on track</li>
+    <li>No guarantee the app starts in the right direction</li>
+    <li>Drift, rework, and surprise UI choices</li>
+    <li>Context gets lost between turns</li>
+  </ul>
+  <table class="t">
+    <thead><tr><th>Approach</th><th>Result</th></tr></thead>
+    <tbody>
+      <tr><td>Ad-hoc chat prompts</td><td>Inconsistent first iteration, lots of cleanup</td></tr>
+      <tr><td>Written spec first</td><td>Aligned scaffold, fewer surprises</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="split-cols wide-table">
+  <h2>From Vibes to Specs</h2>
+  <ul>
+    <li>The industry is converging on three modes of LLM-assisted coding</li>
+    <li>Each adds more structure, less guesswork</li>
+  </ul>
+  <table class="t">
+    <thead><tr><th>Mode</th><th>What you give the LLM</th><th>What you get back</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Vibe coding</strong></td><td>Chat messages</td><td>Code that may or may not match intent</td></tr>
+      <tr><td><strong>Spec-driven dev</strong></td><td>A written spec like STREAMLIT.md</td><td>Code that implements the spec</td></tr>
+      <tr><td><strong>Vibe engineering / Agentic coding</strong></td><td>Spec + repo rules + tools the agent can call</td><td>An autonomous loop you review</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="split-cols wide-table">
+  <h2>Why Spec-driven Wins</h2>
+  <ul>
+    <li>Vibe coding is improvisation, spec-driven dev is composition</li>
+    <li>The spec is the prompt, the repo, and the contract, all at once</li>
+  </ul>
+  <table class="t">
+    <thead><tr><th>Question</th><th>Vibe coding</th><th>Spec-driven dev</th></tr></thead>
+    <tbody>
+      <tr><td>What does this app do?</td><td>Re-read the chat</td><td>Read STREAMLIT.md</td></tr>
+      <tr><td>How do I add a page?</td><td>Re-prompt from scratch</td><td>Edit Pages section, regenerate</td></tr>
+      <tr><td>How do two agents agree?</td><td>They don't</td><td>They share the same spec</td></tr>
+      <tr><td>How do I review a change?</td><td>Diff the code, guess the intent</td><td>Diff the spec, then the code</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="split-cols">
+  <h2>Plan first, prompt once</h2>
+  <ul>
+    <li>Capture intent up front in a single document</li>
+    <li>Front-loaded context beats incremental clarification</li>
+    <li>One prompt yields a coherent scaffold</li>
+  </ul>
+  <table class="t">
+    <thead><tr><th>Section</th><th>What it captures</th></tr></thead>
+    <tbody>
+      <tr><td>Purpose</td><td>App goal and target user</td></tr>
+      <tr><td>Pages</td><td>Layout, navigation, structure</td></tr>
+      <tr><td>Data</td><td>Sources, schemas, queries</td></tr>
+      <tr><td>Interactions</td><td>Widgets and state, declared per page</td></tr>
+      <tr><td>Styling</td><td>Theme, components, branding</td></tr>
+      <tr><td>Deployment</td><td>Target environment, secrets</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="split-cols">
+  <h2>Markdown is the new source of truth</h2>
+  <ul>
+    <li>Originally written for humans on GitHub</li>
+    <li>Now also serves as primary <span class="accent">context for LLMs</span></li>
+    <li>Every major coding agent reads convention files from your repo</li>
+    <li>Plain text, versionable, reviewable, portable</li>
+  </ul>
+  <table class="t">
+    <thead><tr><th>Reader</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td>Humans</td><td>Understand and use the project</td></tr>
+      <tr><td>LLM agents</td><td>Ground responses, follow rules, reuse skills</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2>Meet the Markdown Family</h2>
+  <ul>
+    <li>Each file gives the LLM a different <span class="accent">slice of context</span></li>
+    <li>Roles split by audience (humans vs agents) and concern (what, how, look)</li>
+    <li>You can mix and match, all live in the repo</li>
+  </ul>
+  <table class="t">
+    <thead><tr><th>File</th><th>Role</th><th>Audience</th></tr></thead>
+    <tbody>
+      <tr><td><code>README.md</code></td><td>What the project does, how to use</td><td>Humans</td></tr>
+      <tr><td><code>AGENTS.md</code></td><td>Rules and constraints in this directory</td><td>Any LLM agent</td></tr>
+      <tr><td><code>CLAUDE.md</code></td><td>Project memory and instructions</td><td>Claude</td></tr>
+      <tr><td><code>SKILL.md</code></td><td>Reusable skill definitions</td><td>Agent workflows</td></tr>
+      <tr><td><code>DESIGN.md</code></td><td>Frontend design patterns (Google)</td><td>LLM</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="split-cols">
+  <h2>Introducing STREAMLIT.md</h2>
+  <ul>
+    <li>An input plan and spec, fed to the LLM</li>
+    <li>Goal: generate a strong <span class="accent">first iteration</span> of a Streamlit app</li>
+    <li>Lives next to the code, evolves with the project</li>
+    <li>Reusable across agents and sessions</li>
+  </ul>
+  <table class="t">
+    <thead><tr><th>Phase</th><th>Artifact</th></tr></thead>
+    <tbody>
+      <tr><td>Plan</td><td><code>STREAMLIT.md</code> (you write this with the LLM)</td></tr>
+      <tr><td>Build</td><td><code>app.py</code> and supporting files (LLM generates)</td></tr>
+      <tr><td>Iterate</td><td>Edit <code>STREAMLIT.md</code>, regenerate or refine</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="split-cols v-center">
+  <h2>What STREAMLIT.md looks like</h2>
+  <ul>
+    <li>A structured Markdown file the LLM reads to generate the app</li>
+    <li>Sections cover purpose, pages, data, widgets, theme, deployment</li>
+  </ul>
+  <div class="prompt-block right-col v-center small">
+    <span class="code-label">CONTENTS OF STREAMLIT.md</span>
+    <pre><code class="language-markdown" data-trim>
+# STREAMLIT.md
+
+## Purpose
+A dashboard for sales reps to track quarterly pipeline.
+
+## Pages
+- Overview: KPI cards, pipeline by stage
+  - Inputs: date range, region multiselect
+  - Persists: active filters
+- Deals: filterable table with drill-down
+  - Persists: selected deal across reruns
+
+## Data
+- Source: Snowflake, table SALES.PIPELINE
+- Refresh: cached 5 minutes
+
+## Theme
+- Primary color #29B5E8
+- Dark mode default
+
+## Deployment
+- Streamlit in Snowflake
+- Warehouse: COMPUTE_WH
+    </code></pre>
+  </div>
+</section>
+
+<section class="split-cols v-center">
+  <h2>STREAMLIT.md: Extended Sections</h2>
+  <ul>
+    <li>The minimal core gets you started, larger apps add more</li>
+    <li>Pick what fits, skip what does not</li>
+  </ul>
+  <table class="t small">
+    <thead><tr><th>Section</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td><code>## Personas</code></td><td>Primary and secondary users</td></tr>
+      <tr><td><code>## Auth &amp; Access</code></td><td>Login, roles, row-level filtering</td></tr>
+      <tr><td><code>## Secrets</code></td><td>Keys, env vars, sources</td></tr>
+      <tr><td><code>## Dependencies</code></td><td>Python packages, pinned versions</td></tr>
+      <tr><td><code>## File Structure</code></td><td><code>app.py</code>, <code>pages/</code>, <code>components/</code></td></tr>
+      <tr><td><code>## Components</code></td><td>Reusable widgets, shared modules</td></tr>
+      <tr><td><code>## Performance</code></td><td>Caching, fragments, scale</td></tr>
+      <tr><td><code>## Error Handling</code></td><td>Fallback UI, retries, empty states</td></tr>
+      <tr><td><code>## Observability</code></td><td>Logging, telemetry, metrics</td></tr>
+      <tr><td><code>## Out of Scope</code></td><td>Explicit non-goals</td></tr>
+      <tr><td><code>## Open Questions</code></td><td>Decisions deferred to later</td></tr>
+      <tr><td><code>## Changelog</code></td><td>Spec version history</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2>Before vs After</h2>
+  <ul>
+    <li>Same goal, two paths: ad-hoc chat versus a written spec</li>
+    <li>Spec-first front-loads decisions the agent would otherwise guess</li>
+  </ul>
+  <table class="t">
+    <thead><tr><th>Step</th><th>Without spec</th><th>With STREAMLIT.md</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>"Build me a sales dashboard"</td><td>Interview produces full spec</td></tr>
+      <tr><td>2</td><td>Agent picks random layout</td><td>Layout matches stated pages</td></tr>
+      <tr><td>3</td><td>You ask for theme tweaks</td><td>Theme already specified</td></tr>
+      <tr><td>4</td><td>Five rounds of corrections</td><td>One iteration to refine</td></tr>
+      <tr><td>5</td><td>Inconsistent state handling</td><td>State keys defined up front</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2>How to create STREAMLIT.md</h2>
+  <ul>
+    <li>One question at a time, until it has enough context</li>
+    <li>Then it writes a comprehensive STREAMLIT.md for review</li>
+  </ul>
+  <div class="two-col">
+    <div>
+      <span class="code-label">WITH TEMPLATE STREAMLIT.md</span>
+      <pre><code class="language-markdown" data-trim>
+Use repo/STREAMLIT.md as the template.
+
+Interview me one section at a time and
+fill in every &lt;placeholder&gt; in the file.
+
+Follow the guidance notes in each section.
+Do not skip ahead. Do not invent details.
+
+When every placeholder is filled, save the
+result as STREAMLIT.md for my review.
+      </code></pre>
+    </div>
+    <div>
+      <span class="code-label">WITHOUT TEMPLATE STREAMLIT.md</span>
+      <pre><code class="language-markdown" data-trim>
+Help me create a STREAMLIT.md file for my app.
+
+Interview me to gather all the context you need:
+- App purpose and primary user
+- Pages and navigation
+- Data sources, schemas, queries
+- Key widgets and state
+- Styling and theme
+- Deployment target
+
+Ask one question at a time. When done,
+write STREAMLIT.md as a complete spec.
+      </code></pre>
+    </div>
+  </div>
+</section>
+
+<section class="split-cols">
+  <h2>From Spec to App</h2>
+  <ul>
+    <li>Hand the finished spec to your coding agent in one prompt</li>
+    <li>Iterate by editing the spec, not the chat history</li>
+  </ul>
+  <div class="prompt-block">
+    <span class="code-label">PROMPT TO LLM</span>
+    <pre><code class="language-bash" data-trim>"Read STREAMLIT.md and build the app."</code></pre>
+  </div>
+  <table class="t">
+    <thead><tr><th>Step</th><th>Action</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Interview produces STREAMLIT.md</td></tr>
+      <tr><td>2</td><td>Review and edit the spec</td></tr>
+      <tr><td>3</td><td>LLM generates app.py from the spec</td></tr>
+      <tr><td>4</td><td>Refine spec, regenerate as needed</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2>STREAMLIT.md vs AGENTS.md</h2>
+  <ul>
+    <li>Different files, different jobs, often used together</li>
+    <li>STREAMLIT.md is the <span class="accent">app spec</span></li>
+    <li>AGENTS.md is the <span class="accent">repo rulebook</span></li>
+  </ul>
+  <table class="t">
+    <thead><tr><th>File</th><th>Scope</th><th>Example content</th></tr></thead>
+    <tbody>
+      <tr><td><code>STREAMLIT.md</code></td><td>This app</td><td>Pages, widgets, theme, deployment</td></tr>
+      <tr><td><code>AGENTS.md</code></td><td>The repo</td><td>"Use uv, not pip", "Never commit secrets"</td></tr>
+      <tr><td><code>README.md</code></td><td>Humans</td><td>What the project does, how to run</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2>Enforcing the Changelog</h2>
+  <ul>
+    <li>STREAMLIT.md says <em>what</em> to build, AGENTS.md says <em>how</em> the agent behaves</li>
+    <li>Codify the rule once, every agent that reads the repo follows it</li>
+  </ul>
+  <span class="code-label">CONTENTS OF AGENTS.md</span>
+  <pre><code class="language-markdown" data-trim>
+## Editing STREAMLIT.md
+- Treat STREAMLIT.md as the source of truth for app behavior.
+- When you change any section, append an entry to ## Changelog:
+  - Date (YYYY-MM-DD), section touched, one-line summary.
+- Never silently edit. If unclear, ask before changing.
+- If STREAMLIT.md and code disagree, update code to match the
+  spec, not the other way around.
+  </code></pre>
+</section>
+
+<section class="split-cols">
+  <h2>Iterating on the Spec</h2>
+  <ul>
+    <li>The spec is a living document, not a one-shot artifact</li>
+    <li>Edit STREAMLIT.md, then ask the agent to apply the diff</li>
+    <li>Keep a Changelog section for traceability</li>
+  </ul>
+  <div class="prompt-block">
+    <span class="code-label">PROMPT TO LLM</span>
+    <pre><code class="language-bash" data-trim>"I updated STREAMLIT.md (added a Filters section).
+Update app.py to match, do not change unrelated code."</code></pre>
+  </div>
+  <table class="t">
+    <thead><tr><th>Change type</th><th>Action</th></tr></thead>
+    <tbody>
+      <tr><td>Add page</td><td>Add to Pages section, regenerate that page</td></tr>
+      <tr><td>Theme tweak</td><td>Edit Theme section, restyle only</td></tr>
+      <tr><td>New data source</td><td>Update Data section, refactor loaders</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="split-cols">
+  <h2>When Not to Use a Spec</h2>
+  <ul>
+    <li>Spec-driven development has overhead, pick the right tool</li>
+    <li>Match the approach to the app's lifespan and complexity</li>
+  </ul>
+  <table class="t">
+    <thead><tr><th>Use a spec when</th><th>Skip the spec when</th></tr></thead>
+    <tbody>
+      <tr><td>App will be maintained over time</td><td>Throwaway one-off script</td></tr>
+      <tr><td>Multiple pages or non-trivial state</td><td>Single chart, single dataframe</td></tr>
+      <tr><td>Team collaboration on the build</td><td>Solo 10-minute prototype</td></tr>
+      <tr><td>You want repeatable regeneration</td><td>You will hand-write everything</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="split-cols">
+  <h2>Why Spec-driven Development Works</h2>
+  <ul>
+    <li>Front-loaded context beats incremental clarification</li>
+    <li>Written specs are reviewable by humans</li>
+    <li>Versionable, lives in the repo next to the code</li>
+    <li>Reusable across agents and sessions</li>
+  </ul>
+  <table class="t">
+    <thead><tr><th>Benefit</th><th>Impact</th></tr></thead>
+    <tbody>
+      <tr><td>Alignment</td><td>First iteration matches intent</td></tr>
+      <tr><td>Reviewability</td><td>Catch issues before code is written</td></tr>
+      <tr><td>Portability</td><td>Same spec, different agents</td></tr>
+      <tr><td>Maintenance</td><td>Spec is the single source of truth</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="split-cols">
+  <h2>Takeaway</h2>
+  <ul>
+    <li>Treat Markdown as a <span class="accent">first-class interface</span> to your LLM</li>
+    <li>Write the plan, ship the app</li>
+    <li>STREAMLIT.md joins the family of agent-readable convention files</li>
+  </ul>
+  <table class="t">
+    <thead><tr><th>Do</th><th>Avoid</th></tr></thead>
+    <tbody>
+      <tr><td>Spec, then prompt</td><td>Ad-hoc chat without a plan</td></tr>
+      <tr><td>Edit the spec to iterate</td><td>Endless back and forth in chat</td></tr>
+      <tr><td>Commit STREAMLIT.md</td><td>Throwaway prompts</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="split-cols">
+  <h2>What's Next: Agentic Coding</h2>
+  <ul>
+    <li><span class="accent">STREAMLIT.md</span> gives the agent a plan</li>
+    <li><span class="accent">Agent Skills</span> gives it capabilities — reusable, packaged know-how</li>
+    <li><span class="accent">STREAMLIT.md Spec</span> + <span class="accent">Skills</span> = an agent that can plan <em>and</em> execute</li>
+  </ul>
+  <img src="assets/spec-and-skills.png" alt="Spec and Skills" class="split-img">
+</section>
+
+
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+<script>
+  Reveal.initialize({
+    hash: true,
+    slideNumber: 'c/t',
+    transition: 'slide',
+    center: false,
+    width: 1280,
+    height: 720,
+    margin: 0.06,
+    minScale: 0.2,
+    maxScale: 2.0,
+    plugins: [ RevealHighlight, RevealNotes ]
+  });
+</script>
+</body>
+</html>
